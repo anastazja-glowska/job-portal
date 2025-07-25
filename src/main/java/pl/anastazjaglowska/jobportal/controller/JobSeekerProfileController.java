@@ -18,7 +18,9 @@ import pl.anastazjaglowska.jobportal.entity.Skills;
 import pl.anastazjaglowska.jobportal.entity.Users;
 import pl.anastazjaglowska.jobportal.repository.UsersRepository;
 import pl.anastazjaglowska.jobportal.services.JobSeekerProfileService;
+import pl.anastazjaglowska.jobportal.util.FileUploadUtil;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -64,9 +66,15 @@ public class JobSeekerProfileController {
     }
 
     @PostMapping("/addNew")
-    public String addNew(JobSeekerProfile jobSeekerProfile, @RequestParam("image")
-                         MultipartFile image, @RequestParam("pdf") MultipartFile pdf,
+    public String addNew(JobSeekerProfile jobSeekerProfile,
+                         @RequestParam("image")MultipartFile image,
+                         @RequestParam("pdf")MultipartFile pdf,
                          Model model) {
+
+
+
+        System.out.println("Image: " + image.getOriginalFilename());
+        System.out.println("PDF is empty? " + pdf.isEmpty());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(!(authentication instanceof AnonymousAuthenticationToken)) {
@@ -99,7 +107,19 @@ public class JobSeekerProfileController {
         }
 
 
+        JobSeekerProfile seekerProfile = jobSeekerProfileService.addNew(jobSeekerProfile);
 
+        try{
+            String uploadDir = "photos/candidate/"+jobSeekerProfile.getUserAccountId();
+            if(!Objects.equals(image.getOriginalFilename(),"")) {
+                FileUploadUtil.savedFile(uploadDir, imageName, image);
+            }
+            if(!Objects.equals(pdf.getOriginalFilename(),"")) {
+                FileUploadUtil.savedFile(uploadDir, resumeName, pdf);
+            }
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        }
 
 
 
