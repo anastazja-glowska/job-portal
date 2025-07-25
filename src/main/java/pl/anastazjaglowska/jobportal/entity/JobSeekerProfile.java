@@ -2,11 +2,12 @@ package pl.anastazjaglowska.jobportal.entity;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "job_seeker_profile")
-public class JobSeekerProfile {
+public class JobSeekerProfile  {
 
     @Id
     private Integer userAccountId;
