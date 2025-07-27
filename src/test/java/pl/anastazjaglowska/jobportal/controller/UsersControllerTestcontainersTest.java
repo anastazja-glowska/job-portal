@@ -1,31 +1,20 @@
 package pl.anastazjaglowska.jobportal.controller;
 
-import jakarta.validation.Valid;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.assertj.MockMvcTester;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import pl.anastazjaglowska.jobportal.entity.Users;
+import pl.anastazjaglowska.jobportal.entity.UsersTest;
 import pl.anastazjaglowska.jobportal.entity.UsersType;
 import pl.anastazjaglowska.jobportal.repository.UsersTypeRepository;
 import pl.anastazjaglowska.jobportal.services.UsersService;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

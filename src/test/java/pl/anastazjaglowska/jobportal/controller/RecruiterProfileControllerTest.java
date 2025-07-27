@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pl.anastazjaglowska.jobportal.entity.RecruiterProfile;
 import pl.anastazjaglowska.jobportal.entity.Users;
-import pl.anastazjaglowska.jobportal.repository.RecruiterProfileRepository;
+import pl.anastazjaglowska.jobportal.entity.UsersTest;
 import pl.anastazjaglowska.jobportal.repository.UsersRepository;
 import pl.anastazjaglowska.jobportal.services.RecruiterProfileService;
 

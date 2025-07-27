@@ -3,20 +3,18 @@ package pl.anastazjaglowska.jobportal.controller;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.multipart.MultipartFile;
 import pl.anastazjaglowska.jobportal.entity.JobSeekerProfile;
 import pl.anastazjaglowska.jobportal.entity.Users;
+import pl.anastazjaglowska.jobportal.entity.UsersTest;
 import pl.anastazjaglowska.jobportal.repository.UsersRepository;
 import pl.anastazjaglowska.jobportal.services.JobSeekerProfileService;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.ArrayList;
 

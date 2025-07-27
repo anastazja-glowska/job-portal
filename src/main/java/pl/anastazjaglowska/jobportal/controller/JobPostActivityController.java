@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import pl.anastazjaglowska.jobportal.entity.JobPostActivity;
-import pl.anastazjaglowska.jobportal.entity.RecruiterJobsDto;
-import pl.anastazjaglowska.jobportal.entity.RecruiterProfile;
-import pl.anastazjaglowska.jobportal.entity.Users;
+import pl.anastazjaglowska.jobportal.entity.*;
+import pl.anastazjaglowska.jobportal.repository.JobSeekerApplyRepository;
 import pl.anastazjaglowska.jobportal.services.JobPostActivityService;
+import pl.anastazjaglowska.jobportal.services.JobSeekerApplyService;
+import pl.anastazjaglowska.jobportal.services.JobSeekerSaveService;
 import pl.anastazjaglowska.jobportal.services.UsersService;
 
 import java.time.LocalDate;
@@ -31,13 +31,20 @@ public class JobPostActivityController {
 
     private final UsersService usersService;
     private final JobPostActivityService jobPostActivityService;
+    private final JobSeekerApplyService jobSeekerApplyService;
+    private final JobSeekerSaveService jobSeekerSaveService;
 
     
     @Autowired
     public JobPostActivityController(UsersService usersService,
-                                     JobPostActivityService jobPostActivityService) {
+                                     JobPostActivityService jobPostActivityService,
+                                     JobSeekerApplyService jobSeekerApplyService,
+                                     JobSeekerSaveService jobSeekerSaveService) {
         this.usersService = usersService;
         this.jobPostActivityService = jobPostActivityService;
+
+        this.jobSeekerApplyService = jobSeekerApplyService;
+        this.jobSeekerSaveService = jobSeekerSaveService;
     }
 
     @GetMapping("/dashboard/")
@@ -119,6 +126,48 @@ public class JobPostActivityController {
                 List<RecruiterJobsDto> recruiterJobs = jobPostActivityService
                         .getRecruiterJobs(((RecruiterProfile) currentUserProfile).getUserAccountId());
                 model.addAttribute("jobPost", recruiterJobs);
+
+            }else {
+                List<JobSeekerApply> jobSeekerApplyList = jobSeekerApplyService
+                        .getCandidatesJob((JobSeekerProfile) currentUserProfile);
+
+                List<JobSeekerSave> jobSeekerSaveList = jobSeekerSaveService
+                        .getCandidatesJob((JobSeekerProfile) currentUserProfile);
+
+                boolean exist;
+                boolean saved;
+
+                for(JobPostActivity jobActivity: jobPost) {
+                    exist = false;
+                    saved = false;
+
+                    for(JobSeekerApply jobSeekerApply : jobSeekerApplyList) {
+                        if(Objects.equals(jobActivity.getJobPostId(),
+                                jobSeekerApply.getJob().getJobPostId())) {
+                            jobActivity.setIsActive(true);
+                            exist = true;
+                            break;
+                        }
+                    }
+                    for(JobSeekerSave jobSeekerSave: jobSeekerSaveList){
+                        if (Objects.equals(jobActivity.getJobPostId(),
+                                jobSeekerSave.getJob().getJobPostId())) {
+                            jobActivity.setIsSaved(true);
+                            saved = true;
+                            break;
+                        }
+                    }
+
+                    if(!exist) {
+                        jobActivity.setIsActive(false);
+                    }
+
+                    if (!saved) {
+                        jobActivity.setIsSaved(false);
+                    }
+
+                    model.addAttribute("jobPost", jobPost);
+                }
 
             }
         }
