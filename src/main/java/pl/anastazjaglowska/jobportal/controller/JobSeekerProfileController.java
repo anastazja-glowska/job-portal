@@ -1,6 +1,11 @@
 package pl.anastazjaglowska.jobportal.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -8,16 +13,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.anastazjaglowska.jobportal.entity.JobSeekerProfile;
 import pl.anastazjaglowska.jobportal.entity.Skills;
 import pl.anastazjaglowska.jobportal.entity.Users;
 import pl.anastazjaglowska.jobportal.repository.UsersRepository;
 import pl.anastazjaglowska.jobportal.services.JobSeekerProfileService;
+import pl.anastazjaglowska.jobportal.util.FileDownloadUtil;
 import pl.anastazjaglowska.jobportal.util.FileUploadUtil;
 
 import java.io.IOException;
@@ -124,6 +127,46 @@ public class JobSeekerProfileController {
 
 
         return "redirect:/dashboard/";
+
+    }
+
+
+    @GetMapping("/{id}")
+    public String candidateProfile(@PathVariable("id") int id, Model model){
+
+        Optional<JobSeekerProfile> seekerProfile = jobSeekerProfileService.getOne(id);
+        model.addAttribute("profile", seekerProfile.get());
+        return "job-seeker-profile";
+
+    }
+
+    @GetMapping("/downloadResume")
+    public ResponseEntity<?> downloadResume(@RequestParam(value = "fileName") String fileName,
+                                            @RequestParam(value = "userID") String userId){
+
+        FileDownloadUtil fileDownloadUtil = new FileDownloadUtil();
+
+        Resource resource = null;
+
+        try{
+            resource = fileDownloadUtil
+                    .getFileAsResource("photos/candidate/" +userId, fileName);
+
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        if(resource==null){
+            return new ResponseEntity<>("File not found",HttpStatus.NOT_FOUND);
+        }
+
+        String contentType = "application/octet-stream";
+        String header = "attachment; filename=\""+ resource.getFilename() + "\"";
+
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, header)
+                .body(resource);
+
 
     }
 }
